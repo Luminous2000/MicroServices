@@ -4,8 +4,9 @@ const express = require("express");
 const app = express();
 const connect = require('./db/db')
 connect()
-const userRoutes = require("./routes/user.routes");
+const captainRoutes = require("./routes/captain.routes");
 const cookieParser = require('cookie-parser')
+
 const rabbitMq = require('./service/rabbit')
 
 
@@ -17,7 +18,6 @@ rabbitMq.connect();
 
 
 
-
-app.use("/", userRoutes);
+app.use("/", captainRoutes);
 
 module.exports = app;
