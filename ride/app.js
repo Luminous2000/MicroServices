@@ -8,14 +8,20 @@ const cookieParser = require('cookie-parser');
 const rideRoutes = require ('./routes/ride.routes')
 
 const rabbitMq = require('./service/rabbit')
+const morgan = require('morgan')
+try{
 
-rabbitMq.connect();
+    rabbitMq.connect();
+}catch(err){
+    console.log('err', err)
+}
 
 
 
 
 
 app.use(express.json());
+app.use(morgan('dev'))
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 

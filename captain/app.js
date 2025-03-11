@@ -8,11 +8,12 @@ const captainRoutes = require("./routes/captain.routes");
 const cookieParser = require('cookie-parser')
 
 const rabbitMq = require('./service/rabbit')
-
+const morgan = require('morgan')
 
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(morgan('dev'))
 app.use(cookieParser())
 rabbitMq.connect();
 

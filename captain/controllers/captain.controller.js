@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const blacklistTokenSchema = require('../models/blacklisttoken.model')
 const {subscribeToQueue,publishToQueue} = require('../service/rabbit');
 
+const pendingRequests = [];
 
 module.exports.register = async(req,res )=>{
     try{
@@ -98,9 +99,30 @@ module.exports.toggleAvailability = async(req,res)=>{
     
 }
 
+module.exports.waitForNewRide = async (req,res)=>{
+    // set timeout for long polling (e.g., 30 seconds)
+
+    req.setTimeout(30000,()=>{
+        res.status(204).end(); // no Content
+    });
+
+    // add the response object to the pendingRequests array
+    pendingRequests.push(res);
+}
+
 subscribeToQueue("new-ride", (data) => {
   try {
+    const rideData = JSON.parse(data);
     console.log(JSON.parse(data));
+
+    // send the new ride data to all pending requests
+    pendingRequests.forEach(res=>{
+        res.json(rideData)
+    });
+
+    //clear the pending requests
+    pendingRequests.length = 0;
+    
   } catch (error) {
     console.error("Error processing new ride data:", error);
   }
